@@ -47,20 +47,18 @@ def main_thread():
 def show_idle_state():
     texture.fill(pygame.Color("black"))
 
-    line_1 = font.render("Knopf", 1, FONT_COLOR)
-    line_1_rect = line_1.get_rect()
-    line_1_rect.centerx = int(SCREEN_WIDTH / 2.0)
-    line_1_rect.centery = int((SCREEN_HEIGHT - line_1_rect.height) / 2.0)
-    texture.blit(line_1, line_1_rect)
-
-    line_2 = font.render("drücken!", 1, FONT_COLOR)
-    line_2_rect = line_2.get_rect()
-    line_2_rect.centerx = int(SCREEN_WIDTH / 2.0)
-    line_2_rect.centery = int((SCREEN_HEIGHT + line_2_rect.height) / 2.0)
-    texture.blit(line_2, line_2_rect)
+    blit_line("Knopf", -1)
+    blit_line("drücken!", 1)
 
     screen.blit(texture, (0, 0))
     pygame.display.flip()
+
+def blit_line(line, pos=0):
+    line = font.render(line, 1, FONT_COLOR)
+    line_rect = line.get_rect()
+    line_rect.centerx = int(SCREEN_WIDTH / 2.0)
+    line_rect.centery = int((SCREEN_HEIGHT + line_rect.height * pos) / 2.0)
+    texture.blit(line, line_rect)
 
 def take_picture():
     timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
