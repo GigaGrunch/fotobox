@@ -25,7 +25,7 @@ def main_thread():
 
 def take_picture():
     timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
-    filename = "{}/{}.jpg".format(IMAGE_FOLDER, timestamp)
+    filename = f"{IMAGE_FOLDER}/{timestamp}.jpg"
 
     succes = False
     for take in [0, 1, 2]:
@@ -35,12 +35,18 @@ def take_picture():
         success = cmd("mv capt*.jpg {}".format(filename), check=False).returncode == 0
         if success: break
     if success:
-        print("saved {}".format(filename))
+        print_success("saved {}".format(filename))
     else:
-        print("failed to take the image!")
+        print_error("failed to take the image!")
 
 def cmd(args, check=True, print_output=True):
     return subprocess.run(args, shell=True, check=check, capture_output=not print_output)
+
+def print_success(message):
+    print(f"\033[92m{message}\033[0m")
+
+def print_error(message):
+    print(f"\033[91m{message}\033[0m")
 
 def poll_button_thread():
     global button_pressed
