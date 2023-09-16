@@ -7,21 +7,27 @@ from threading import Thread
 
 IMAGE_FOLDER = "output"
 BUTTON_GPIO = 27
+PICTURE_TIMEOUT = 16.0
 
 button_pressed = False
+picture_time = 0.0
 
 def main_thread():
-    global button_pressed
+    global button_pressed, picture_time
 
     if not os.path.isdir(IMAGE_FOLDER):
         os.makedirs(IMAGE_FOLDER)
 
     while True:
-        print("show idle state")
-        while not button_pressed: time.sleep(0.2)
-        button_pressed = False
-        take_picture()
-        time.sleep(16)
+        if time.time() > picture_time + PICTURE_TIMEOUT:
+            print("show idle state")
+
+        if button_pressed:
+            button_pressed = False
+            take_picture()
+            picture_time = time.time()
+
+        time.sleep(0.2)
 
 def take_picture():
     timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
