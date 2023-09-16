@@ -1,5 +1,6 @@
 import os
 import pygame
+import subprocess
 import time
 import RPi.GPIO as GPIO
 from threading import Thread
@@ -19,8 +20,27 @@ def main_thread():
         print("show idle state")
         while not button_pressed: time.sleep(0.2)
         button_pressed = False
-        print("take a picture!")
+        take_picture()
         time.sleep(16)
+
+def take_picture():
+    timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
+    filename = "{}/{}.jpg".format(IMAGE_FOLDER, timestamp)
+
+    succes = False
+    for take in [0, 1, 2]:
+        cmd("rm capt*.jpg", check=False, print_output=False)
+        success = cmd("gphoto2 --capture-image-and-download", check=False).returncode == 0
+        if not success: continue
+        success = cmd("mv capt*.jpg {}".format(filename), check=False).returncode == 0
+        if success: break
+    if success:
+        print("saved {}".format(filename))
+    else:
+        print("failed to take the image!")
+
+def cmd(args, check=True, print_output=True):
+    return subprocess.run(args, shell=True, check=check, capture_output=not print_output)
 
 def poll_button_thread():
     global button_pressed
