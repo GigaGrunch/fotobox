@@ -10,8 +10,17 @@ BUTTON_GPIO = 27
 button_pressed = False
 
 def main_thread():
+    global button_pressed
+
     if not os.path.isdir(IMAGE_FOLDER):
         os.makedirs(IMAGE_FOLDER)
+
+    while True:
+        print("show idle state")
+        while not button_pressed: time.sleep(0.2)
+        button_pressed = False
+        print("take a picture!")
+        time.sleep(16)
 
 def poll_button_thread():
     global button_pressed
