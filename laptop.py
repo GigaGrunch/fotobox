@@ -7,8 +7,11 @@ def server_thread():
 
 class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        print("GET!")
-        self.send_response(200)
+        if self.path == "/take_picture":
+            print("take picture!")
+            self.send_response(200)
+        else:
+            self.send_response(500)
         self.end_headers()
 
 Thread(target=server_thread).start()
