@@ -5,6 +5,7 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from threading import Thread
 
+DROPBOX_FOLDER = "~/Dropbox/Dateianfragen/Hochzeit\\ 23.09./Fotobox"
 IMAGE_FOLDER = "output"
 PICTURE_TIMEOUT = 16
 SCREEN_WIDTH = 1920
@@ -43,6 +44,7 @@ def main_thread():
                 show_error_state()
             else:
                 show_picture(image_path)
+                cmd(f"cp {image_path} {DROPBOX_FOLDER}", check=False)
 
             picture_time = time.time()
 
@@ -109,7 +111,7 @@ def take_picture():
         cmd("rm capt*.jpg", check=False, print_output=False)
         success = cmd("gphoto2 --capture-image-and-download", check=False).returncode == 0
         if not success: continue
-        success = cmd("mv capt*.jpg {}".format(file_path), check=False).returncode == 0
+        success = cmd(f"mv capt*.jpg {file_path}", check=False).returncode == 0
         if success: break
     if success:
         print_success("saved {}".format(file_path))

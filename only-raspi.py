@@ -110,7 +110,7 @@ def take_picture():
         cmd("rm capt*.jpg", check=False, print_output=False)
         success = cmd("gphoto2 --capture-image-and-download", check=False).returncode == 0
         if not success: continue
-        success = cmd("mv capt*.jpg {}".format(file_path), check=False).returncode == 0
+        success = cmd(f"mv capt*.jpg {file_path}", check=False).returncode == 0
         if success: break
     if success:
         print_success("saved {}".format(file_path))
