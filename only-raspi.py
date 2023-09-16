@@ -8,23 +8,32 @@ from threading import Thread
 IMAGE_FOLDER = "output"
 BUTTON_GPIO = 27
 PICTURE_TIMEOUT = 16.0
+SCREEN_WIDTH = 1920
+SCREEN_HEIGHT = 1080
+FONT_SIZE = 500
+FONT_COLOR = (227, 157, 200)
 
 button_pressed = False
 picture_time = 0.0
+font = None
+texture = None
+screen = None
 
 def main_thread():
-    global button_pressed, picture_time
+    global screen, texture, font, button_pressed, picture_time
 
     if not os.path.isdir(IMAGE_FOLDER):
         os.makedirs(IMAGE_FOLDER)
 
     pygame.init()
     pygame.mouse.set_visible(False)
-    pygame.display.set_mode((1920, 1080), pygame.FULLSCREEN)
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
+    texture = pygame.Surface(screen.get_size()).convert()
+    font = pygame.font.Font(None, FONT_SIZE)
 
     while True:
         if time.time() > picture_time + PICTURE_TIMEOUT:
-            print("show idle state")
+            show_idle_state()
 
         if button_pressed:
             button_pressed = False
@@ -34,6 +43,24 @@ def main_thread():
         time.sleep(0.2)
 
     pygame.quit()
+
+def show_idle_state():
+    texture.fill(pygame.Color("black"))
+
+    line_1 = font.render("Knopf", 1, FONT_COLOR)
+    line_1_rect = line_1.get_rect()
+    line_1_rect.centerx = int(SCREEN_WIDTH / 2.0)
+    line_1_rect.centery = int((SCREEN_HEIGHT - line_1_rect.height) / 2.0)
+    texture.blit(line_1, line_1_rect)
+
+    line_2 = font.render("drücken!", 1, FONT_COLOR)
+    line_2_rect = line_2.get_rect()
+    line_2_rect.centerx = int(SCREEN_WIDTH / 2.0)
+    line_2_rect.centery = int((SCREEN_HEIGHT + line_2_rect.height) / 2.0)
+    texture.blit(line_2, line_2_rect)
+
+    screen.blit(texture, (0, 0))
+    pygame.display.flip()
 
 def take_picture():
     timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
