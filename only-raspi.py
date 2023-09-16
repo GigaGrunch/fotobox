@@ -18,6 +18,10 @@ def main_thread():
     if not os.path.isdir(IMAGE_FOLDER):
         os.makedirs(IMAGE_FOLDER)
 
+    pygame.init()
+    pygame.mouse.set_visible(False)
+    pygame.display.set_mode((1920, 1080), pygame.FULLSCREEN)
+
     while True:
         if time.time() > picture_time + PICTURE_TIMEOUT:
             print("show idle state")
@@ -28,6 +32,8 @@ def main_thread():
             picture_time = time.time()
 
         time.sleep(0.2)
+
+    pygame.quit()
 
 def take_picture():
     timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
@@ -44,15 +50,6 @@ def take_picture():
         print_success("saved {}".format(filename))
     else:
         print_error("failed to take the image!")
-
-def cmd(args, check=True, print_output=True):
-    return subprocess.run(args, shell=True, check=check, capture_output=not print_output)
-
-def print_success(message):
-    print(f"\033[92m{message}\033[0m")
-
-def print_error(message):
-    print(f"\033[91m{message}\033[0m")
 
 def poll_button_thread():
     global button_pressed
@@ -76,6 +73,15 @@ def poll_button_thread():
             print("button timeout is over")
 
         time.sleep(0.01)
+
+def cmd(args, check=True, print_output=True):
+    return subprocess.run(args, shell=True, check=check, capture_output=not print_output)
+
+def print_success(message):
+    print(f"\033[92m{message}\033[0m")
+
+def print_error(message):
+    print(f"\033[91m{message}\033[0m")
 
 Thread(target=main_thread).start()
 Thread(target=poll_button_thread).start()
