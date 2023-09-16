@@ -23,12 +23,14 @@ texture = pygame.Surface(screen.get_size()).convert()
 font = pygame.font.Font(None, FONT_SIZE)
 
 def main_thread():
-    global screen, texture, font, button_pressed, picture_time
+    global button_pressed, picture_time
 
     if not os.path.isdir(IMAGE_FOLDER):
         os.makedirs(IMAGE_FOLDER)
 
     while True:
+        pygame.event.get()
+
         if time.time() > picture_time + PICTURE_TIMEOUT:
             show_idle_state()
 
@@ -46,8 +48,6 @@ def main_thread():
             picture_time = time.time()
 
         time.sleep(0.2)
-
-    pygame.quit()
 
 def show_picture(file_path):
     texture.fill((0, 0, 0))
