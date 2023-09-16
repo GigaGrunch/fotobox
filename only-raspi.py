@@ -15,21 +15,18 @@ FONT_COLOR = (227, 157, 200)
 
 button_pressed = False
 picture_time = 0.0
-font = None
-texture = None
-screen = None
+
+pygame.init()
+pygame.mouse.set_visible(False)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
+texture = pygame.Surface(screen.get_size()).convert()
+font = pygame.font.Font(None, FONT_SIZE)
 
 def main_thread():
     global screen, texture, font, button_pressed, picture_time
 
     if not os.path.isdir(IMAGE_FOLDER):
         os.makedirs(IMAGE_FOLDER)
-
-    pygame.init()
-    pygame.mouse.set_visible(False)
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
-    texture = pygame.Surface(screen.get_size()).convert()
-    font = pygame.font.Font(None, FONT_SIZE)
 
     while True:
         if time.time() > picture_time + PICTURE_TIMEOUT:
