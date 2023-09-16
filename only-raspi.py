@@ -53,6 +53,12 @@ def show_idle_state():
     screen.blit(texture, (0, 0))
     pygame.display.flip()
 
+def show_error_state():
+    texture.fill(pygame.Color("black"))
+    blit_line("Error :(")
+    screen.blit(texture, (0, 0))
+    pygame.display.flip()
+
 def blit_line(line, pos=0):
     line = font.render(line, 1, FONT_COLOR)
     line_rect = line.get_rect()
@@ -75,6 +81,7 @@ def take_picture():
         print_success("saved {}".format(filename))
     else:
         print_error("failed to take the image!")
+        show_error_state()
 
 def poll_button_thread():
     global button_pressed
