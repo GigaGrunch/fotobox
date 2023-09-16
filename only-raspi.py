@@ -37,15 +37,43 @@ def main_thread():
 
         if button_pressed:
             button_pressed = False
-            take_picture()
+
+            image_path = take_picture()
+            if image_path == None:
+                show_error_state()
+            else:
+                show_picture(image_path)
+
             picture_time = time.time()
 
         time.sleep(0.2)
 
     pygame.quit()
 
+def show_picture(file_path):
+    texture.fill((0, 0, 0))
+    try:
+        image = pygame.image.load(file_path)
+    except:
+        print_error(f"failed to load image from '{file_path}'")
+        show_error_state()
+        return
+
+    screen_ratio = SCREEN_WIDTH / SCREEN_HEIGHT
+    image_ratio = image.get_width() / image.get_height()
+
+    scaled_height = int(SCREEN_HEIGHT)
+    scaled_width = int(scaled_height * image_ratio)
+    image = pygame.transform.scale(image, (scaled_width, scaled_height))
+
+    x_offset = int((SCREEN_WIDTH - scaled_width) / 2.0)
+
+    texture.blit(image, (x_offset, 0))
+    screen.blit(texture, (0, 0))
+    pygame.display.flip()
+
 def show_idle_state():
-    texture.fill(pygame.Color("black"))
+    texture.fill((0, 0, 0))
 
     blit_line("Knopf", -1)
     blit_line("drücken!", 1)
@@ -54,7 +82,7 @@ def show_idle_state():
     pygame.display.flip()
 
 def show_error_state():
-    texture.fill(pygame.Color("black"))
+    texture.fill((0, 0, 0))
     blit_line("Error :(")
     screen.blit(texture, (0, 0))
     pygame.display.flip()
@@ -68,20 +96,20 @@ def blit_line(line, pos=0):
 
 def take_picture():
     timestamp = time.strftime("%Y-%m-%d_%H-%M-%S")
-    filename = f"{IMAGE_FOLDER}/{timestamp}.jpg"
+    file_path = f"{IMAGE_FOLDER}/{timestamp}.jpg"
 
     succes = False
     for take in [0, 1, 2]:
         cmd("rm capt*.jpg", check=False, print_output=False)
         success = cmd("gphoto2 --capture-image-and-download", check=False).returncode == 0
         if not success: continue
-        success = cmd("mv capt*.jpg {}".format(filename), check=False).returncode == 0
+        success = cmd("mv capt*.jpg {}".format(file_path), check=False).returncode == 0
         if success: break
     if success:
-        print_success("saved {}".format(filename))
+        print_success("saved {}".format(file_path))
+        return file_path
     else:
         print_error("failed to take the image!")
-        show_error_state()
 
 def poll_button_thread():
     global button_pressed
