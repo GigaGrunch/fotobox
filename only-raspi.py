@@ -38,6 +38,8 @@ def main_thread():
         if button_pressed:
             button_pressed = False
 
+            show_countdown()
+
             image_path = take_picture()
             if image_path == None:
                 show_error_state()
@@ -71,6 +73,14 @@ def show_picture(file_path):
     texture.blit(image, (x_offset, 0))
     screen.blit(texture, (0, 0))
     pygame.display.flip()
+
+def show_countdown():
+    for text in ["Achtung!", "Achtung!", "3", "2", "1", ""]:
+        texture.fill((0, 0, 0))
+        blit_line(text)
+        screen.blit(texture, (0, 0))
+        pygame.display.flip()
+        time.sleep(0.7)
 
 def show_idle_state():
     texture.fill((0, 0, 0))
