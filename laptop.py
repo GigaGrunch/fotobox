@@ -4,6 +4,7 @@ import subprocess
 import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from threading import Thread
+import random
 
 DROPBOX_FOLDER = "~/Dropbox/Dateianfragen/Hochzeit\\ 23.09./Fotobox"
 IMAGE_FOLDER = "output"
@@ -12,27 +13,40 @@ SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080
 FONT_SIZE = 500
 FONT_COLOR = (227, 157, 200)
+BG_COLOR = (0,0,0)
+
+IDLE_PICTURE_TIMEOUT = 2 #seconds
 
 button_pressed = False
 picture_time = 0
 
+idle_picture_time = 0
+
 pygame.init()
 pygame.mouse.set_visible(False)
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.WINDOWMAXIMIZED)
 texture = pygame.Surface(screen.get_size()).convert()
 font = pygame.font.Font(None, FONT_SIZE)
 
+current_idle_texture = pygame.Surface(screen.get_size()).convert()
+
 def main_thread():
-    global button_pressed, picture_time
+    global button_pressed, picture_time, idle_picture_time
 
     if not os.path.isdir(IMAGE_FOLDER):
         os.makedirs(IMAGE_FOLDER)
+
+    swap_idle_picture()
 
     while True:
         pygame.event.get()
 
         if time.time() > picture_time + PICTURE_TIMEOUT:
             show_idle_state()
+
+        if time.time() > idle_picture_time + IDLE_PICTURE_TIMEOUT:
+            swap_idle_picture()
+            idle_picture_time=time.time()
 
         if button_pressed:
             button_pressed = False
@@ -51,7 +65,7 @@ def main_thread():
         time.sleep(0.2)
 
 def show_picture(file_path):
-    texture.fill((0, 0, 0))
+    texture.fill(BG_COLOR)
     try:
         image = pygame.image.load(file_path)
     except:
@@ -70,23 +84,56 @@ def show_picture(file_path):
 
     texture.blit(image, (x_offset, 0))
     screen.blit(texture, (0, 0))
+
     pygame.display.flip()
 
 def show_countdown():
     for text in ["Achtung!", "Achtung!", "3", "2", "1", ""]:
-        texture.fill((0, 0, 0))
+        texture.fill(BG_COLOR)
         blit_line(text)
         screen.blit(texture, (0, 0))
         pygame.display.flip()
         time.sleep(0.7)
 
+def load_file_to_texture(file_path):
+    new_texture = pygame.Surface(screen.get_size()).convert()
+    new_texture.fill(BG_COLOR)
+    try:
+        image = pygame.image.load(file_path)
+    except:
+        print_error(f"failed to load image from '{file_path}'")
+        return new_texture #just return BG color
+
+    image_ratio = image.get_width() / image.get_height()
+
+    scaled_height = int(SCREEN_HEIGHT)
+    scaled_width = int(scaled_height * image_ratio)
+    image = pygame.transform.scale(image, (scaled_width, scaled_height))
+
+    x_offset = int((SCREEN_WIDTH - scaled_width) / 2.0)
+
+    new_texture.blit(image, (x_offset, 0))
+    return new_texture
+
+def swap_idle_picture():
+    global current_idle_texture
+    res = []
+
+    for file_path in os.listdir(IMAGE_FOLDER):
+        if os.path.isfile(os.path.join(IMAGE_FOLDER, file_path)):
+            res.append(file_path)
+    
+    random_idx = random.randint(0, res.__len__()-1)
+    current_idle_picture_path  = f"{IMAGE_FOLDER}/{res[random_idx]}"
+    current_idle_texture = load_file_to_texture(current_idle_picture_path)
+
 def show_idle_state():
-    texture.fill((0, 0, 0))
-
-    blit_line("Knopf", -1)
+    texture.fill((0,0,0,0))
+    blit_line("Knopf", -1) # blits into global texture
     blit_line("drücken!", 1)
+    screen.blit(current_idle_texture, (0, 0))
+    screen.blit(texture, (0, 0),None,  pygame.BLEND_RGB_ADD)
 
-    screen.blit(texture, (0, 0))
     pygame.display.flip()
 
 def show_error_state():
