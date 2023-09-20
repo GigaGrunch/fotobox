@@ -123,7 +123,9 @@ def swap_idle_picture():
         if os.path.isfile(os.path.join(IMAGE_FOLDER, file_path)):
             res.append(file_path)
     
-    random_idx = random.randint(0, res.__len__()-1)
+    if len(res) == 0: return
+
+    random_idx = random.randint(0, len(res)-1)
     current_idle_picture_path  = f"{IMAGE_FOLDER}/{res[random_idx]}"
     current_idle_texture = load_file_to_texture(current_idle_picture_path)
 
