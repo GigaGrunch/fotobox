@@ -24,7 +24,7 @@ idle_picture_time = 0
 
 pygame.init()
 pygame.mouse.set_visible(False)
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.WINDOWMAXIMIZED)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
 texture = pygame.Surface(screen.get_size()).convert()
 font = pygame.font.Font(None, FONT_SIZE)
 
