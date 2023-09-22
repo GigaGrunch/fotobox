@@ -15,7 +15,7 @@ FONT_SIZE = 500
 FONT_COLOR = (227, 157, 200)
 BG_COLOR = (0,0,0)
 
-IDLE_PICTURE_TIMEOUT = 2 #seconds
+IDLE_PICTURE_TIMEOUT = 5 #seconds
 
 button_pressed = False
 picture_time = 0
