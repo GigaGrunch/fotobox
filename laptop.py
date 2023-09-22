@@ -127,8 +127,8 @@ def show_picture(file_path):
     texture.blit(image, (x_offset, 0))
 
     # Blit random comment into photo:
-    text = comments[random.randint(0, len(comments)-1)]
-    blit_comment(texture, 50, text)
+    # text = comments[random.randint(0, len(comments)-1)]
+    # blit_comment(texture, 50, text)
 
     screen.blit(texture, (0, 0))
 
